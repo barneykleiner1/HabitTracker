@@ -72,6 +72,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[11.0.0, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[11.0.1, )"
             }
           },
           "imports": [
