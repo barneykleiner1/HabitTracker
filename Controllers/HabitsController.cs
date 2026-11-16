@@ -1,35 +1,40 @@
 using Microsoft.AspNetCore.Mvc;
-using HabitTracker.Data;
 using HabitTracker.Dtos;
-using Microsoft.EntityFrameworkCore;
-using HabitTracker.Models;
+using HabitTracker.Services;
 
 namespace HabitTracker.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class HabitsController : ControllerBase 
+public class HabitsController : ControllerBase
 {
-    private readonly AppDbContext _db;
-    public HabitsController(AppDbContext db)
+    private readonly IHabitService _service;
+
+    // Теперь контроллер зависит ТОЛЬКО от Сервиса!
+    public HabitsController(IHabitService service)
     {
-        _db = db;
+        _service = service;
     }
+
     [HttpGet]
-    public async Task<ActionResult<List<HabitPublicDto>>> GetAll() 
+    public async Task<ActionResult<List<HabitPublicDto>>> GetAll()
     {
-    var habits = await _db.Habits
-        .Select(h => new HabitPublicDto(h.Id, h.Name, h.CreatedAt))
-        .ToListAsync();
-    return Ok(habits);
+        var habits = await _service.GetAllAsync();
+        return Ok(habits);
     }
+
     [HttpPost]
-    public async Task<ActionResult<HabitPublicDto>> Create(HabitCreateDto habitDto)
+    public async Task<ActionResult<HabitPublicDto>> Create(HabitCreateDto dto)
     {
-        var habit = new Habit { Name = habitDto.Name };
-        _db.Habits.Add(habit);
-        await _db.SaveChangesAsync();
-        var newDto = new HabitPublicDto(habit.Id, habit.Name, habit.CreatedAt);
-        return Ok(newDto);
+        try
+        {
+            var result = await _service.CreateAsync(dto);
+            return Ok(result);
+        }
+        catch (HabitAlreadyExistsException ex)
+        {
+            // Ловим бизнес-ошибку и превращаем её в HTTP 409 Conflict
+            return Conflict(ex.Message);
+        }
     }
 }

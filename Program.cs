@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using HabitTracker.Data;
+using HabitTracker.Repositories;
+using HabitTracker.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
+builder.Services.AddScoped<IHabitRepository, HabitRepository>();
+builder.Services.AddScoped<IHabitService, HabitService>();
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
