@@ -1,10 +1,14 @@
 # HabitTracker
-just CRUD for me, try.
+Решил, что будет полезно для себя иметь такое описание.
+Models/ - Сущности базы данных. Только свойства, никакой логики. (Habit, HabitEntry).
+Dtos/ - Объекты для общения с клиентом. (HabitCreateDto, HabitPublicDto).
+Data/ - Контекст базы (AppDbContext).
+Repositories/ - Только LINQ-запросы к базе. (IHabitRepository, HabitRepository).
+Services/ - Правила и логика. (IHabitService, HabitService, HabitAlreadyExistsException).
+Controllers/ - Прием HTTP-запросов и отдача HTTP-ответов. (HabitsController).
 # DAY 1
-new project, create a habit tracker app with CRUD functionality. The app i will try create and upload to github with my redactions.
-дополнение к дню 1(1): сваггер заработал, все хорошо, надо разделить код и не сувать все в контроллер.
-дополнение к дню 1(2): с ноута продолжить завтра работу над рефакторингом кода.
+Всё в контроллере, без сервисов и репозиториев. Добавление сущностей, контекста базы данных, DTO, контроллера и миграций.
 # DAY 2
-разбивка кода на сервайсес и репозитории, добавление интерфейсов, внедрение зависимостей, рефакторинг кода.
-16.11.2026 10:50
-добавлен сервайс и взаимодействие через сервайс
+Рефакторинг, вынос из контроллера кода в сервисы и репозитории. Добавление проверки на существование привычки при добавлении новой привычки. Добавление исключения HabitAlreadyExistsException.
+# DAY 3
+Сюда будет добавлено ещё что-то. Допишу завтра.
