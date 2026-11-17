@@ -11,10 +11,18 @@ public class HabitAlreadyExistsException : Exception
     
     }
 }
+public class HabitEntryAlreadyExistsException : Exception
+{
+    public HabitEntryAlreadyExistsException() : base($"Запись привычки на сегодня уже существует")
+    {
+    
+    }
+}
 public interface IHabitService 
 {
     Task<List<HabitPublicDto>> GetAllAsync();
     Task<HabitPublicDto> CreateAsync(HabitCreateDto dto);
+    Task<HabitEntryPublicDto> CreateEntryAsync(int habitId);
 }
 public class HabitService : IHabitService 
 {
@@ -40,4 +48,5 @@ public class HabitService : IHabitService
         await _repository.CreateAsync(habit);
         return new HabitPublicDto(habit.Id, habit.Name, habit.CreatedAt);
     }
+
 }

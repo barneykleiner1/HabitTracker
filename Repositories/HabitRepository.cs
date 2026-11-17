@@ -26,4 +26,18 @@ public class HabitRepository : IHabitRepository
         await _db.SaveChangesAsync(); // сохраняем изменения в базе данных
         return habit; // возвращаем созданную привычку
     }
+    public async Task<HabitEntry> CreateEntryAsync(HabitEntry entry) 
+    {
+        await _db.HabitEntries.AddAsync(entry); // добавляем новую запись привычки в базу данных
+        await _db.SaveChangesAsync(); // сохраняем изменения в базе данных
+        return entry; // возвращаем созданную запись привычки
+    }
+    public async Task<HabitEntry?> GetEntryByDateAsync(int habitId, DateTime date) 
+    {
+        return await _db.HabitEntries.FirstOrDefaultAsync(e => e.HabitId == habitId && e.Date == date.Date); 
+    }
+    public async Task<Habit?> GetByIdAsync(int id)
+    {
+        return await _db.Habits.FirstOrDefaultAsync(h => h.Id == id); // возвращаем привычку по идентификатору
+    }
 }
