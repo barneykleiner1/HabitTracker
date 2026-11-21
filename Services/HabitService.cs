@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization.Metadata;
 using HabitTracker.Dtos;
 using HabitTracker.Models;
 using HabitTracker.Repositories;
@@ -24,6 +23,7 @@ public interface IHabitService
     Task<HabitPublicDto> CreateAsync(HabitCreateDto dto);
     Task<HabitEntryPublicDto> CreateEntryAsync(int habitId);
     Task DeleteAsync(int id);
+    Task<DailyStatsDto> GetTodayStatsAsync();
 }
 public class HabitService : IHabitService 
 {
@@ -72,5 +72,18 @@ public class HabitService : IHabitService
             throw new Exception($"Привычка с идентификатором {id} не найдена");
         }
         await _repository.DeleteAsync(habit);
+    }
+    public async Task<DailyStatsDto> GetTodayStatsAsync() 
+    {
+        var habits = await _repository.GetAllAsync();
+        var entries = await _repository.GetEntriesByDateAsync(DateTime.UtcNow);
+        var habitIds = habits.Select(h => h.Id).ToList();
+        var completedToday = entries
+            .Where(e => e.IsCompleted && habitIds.Contains(e.HabitId))
+            .Select(e => e.HabitId)
+            .Distinct()
+            .Count();
+        var habitDtos = habits.Select(h => new HabitPublicDto(h.Id, h.Name, h.CreatedAt)).ToList();
+        return new DailyStatsDto(habits.Count, completedToday, habitDtos);
     }
 }

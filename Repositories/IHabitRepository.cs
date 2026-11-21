@@ -11,4 +11,5 @@ public interface IHabitRepository
     Task<HabitEntry?> GetEntryByDateAsync(int habitId, DateTime date);
     Task<Habit?> GetByIdAsync(int id);
     Task DeleteAsync(Habit habit);
+    Task<List<HabitEntry>> GetEntriesByDateAsync(DateTime date);
 }

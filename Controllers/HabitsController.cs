@@ -67,4 +67,10 @@ public class HabitsController : ControllerBase
             return NotFound(ex.Message);
         }
     }
+    [HttpGet("today")]
+    public async Task<ActionResult<DailyStatsDto>> GetToday()
+    {
+        var stats = await _service.GetTodayStatsAsync();
+        return Ok(stats);
+    }
 }

@@ -45,4 +45,8 @@ public class HabitRepository : IHabitRepository
         _db.Habits.Remove(habit);
         await _db.SaveChangesAsync(); //  удаляем привычку и сохраняем изменения в базе данных
     }
+    public async Task<List<HabitEntry>> GetEntriesByDateAsync(DateTime date)
+    {
+        return await _db.HabitEntries.Where(e => e.Date.Date == date.Date).ToListAsync(); // возвращаем все записи привычек за указанную дату(у нас за сегодняшний день, хотя по факту дата может быть любой)
+    }
 }
