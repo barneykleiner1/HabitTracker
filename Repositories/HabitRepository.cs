@@ -40,4 +40,9 @@ public class HabitRepository : IHabitRepository
     {
         return await _db.Habits.FirstOrDefaultAsync(h => h.Id == id); // возвращаем привычку по идентификатору
     }
+    public async Task DeleteAsync(Habit habit) 
+    {
+        _db.Habits.Remove(habit);
+        await _db.SaveChangesAsync(); //  удаляем привычку и сохраняем изменения в базе данных
+    }
 }

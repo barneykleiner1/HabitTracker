@@ -54,4 +54,17 @@ public class HabitsController : ControllerBase
             return NotFound(ex.Message);
         }
     }
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        try
+        {
+            await _service.DeleteAsync(id);
+            return NoContent(); // 204 - Успешно удалено
+        }
+        catch (Exception ex) // Ловим KeyNotFoundException из сервиса
+        {
+            return NotFound(ex.Message);
+        }
+    }
 }

@@ -1,4 +1,4 @@
-using System.Reflection.Metadata.Ecma335; // ???
+using System.Text.Json.Serialization.Metadata;
 using HabitTracker.Dtos;
 using HabitTracker.Models;
 using HabitTracker.Repositories;
@@ -23,6 +23,7 @@ public interface IHabitService
     Task<List<HabitPublicDto>> GetAllAsync();
     Task<HabitPublicDto> CreateAsync(HabitCreateDto dto);
     Task<HabitEntryPublicDto> CreateEntryAsync(int habitId);
+    Task DeleteAsync(int id);
 }
 public class HabitService : IHabitService 
 {
@@ -62,5 +63,14 @@ public class HabitService : IHabitService
         var HabitEntry = new HabitEntry { HabitId = habitId, Date = DateTime.UtcNow, IsCompleted = true };
         await _repository.CreateEntryAsync(HabitEntry);
         return new HabitEntryPublicDto(HabitEntry.Id, HabitEntry.HabitId, HabitEntry.Date, HabitEntry.IsCompleted);
+    }
+    public async Task DeleteAsync(int id)
+    {
+        var habit = await _repository.GetByIdAsync(id);
+        if (habit == null)
+        {
+            throw new Exception($"Привычка с идентификатором {id} не найдена");
+        }
+        await _repository.DeleteAsync(habit);
     }
 }
