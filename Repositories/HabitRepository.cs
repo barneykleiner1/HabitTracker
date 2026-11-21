@@ -49,4 +49,17 @@ public class HabitRepository : IHabitRepository
     {
         return await _db.HabitEntries.Where(e => e.Date.Date == date.Date).ToListAsync(); // возвращаем все записи привычек за указанную дату(у нас за сегодняшний день, хотя по факту дата может быть любой)
     }
+    public async Task DeleteEntryAsync(HabitEntry entry)
+    {
+        _db.HabitEntries.Remove(entry);
+        await _db.SaveChangesAsync();
+    }
+    public async Task<HabitEntry?> GetEntryAsync(int entryId)
+    {
+        return await _db.HabitEntries.FirstOrDefaultAsync(e => e.Id == entryId);
+    }
+    public async Task<List<HabitEntry>> GetEntriesByHabitIdAsync(int habitId)
+    {
+        return await _db.HabitEntries.Where(e => e.HabitId == habitId).ToListAsync();
+    }
 }

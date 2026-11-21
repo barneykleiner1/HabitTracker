@@ -54,17 +54,21 @@ public class HabitsController : ControllerBase
             return NotFound(ex.Message);
         }
     }
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    [HttpDelete("{habitId}/entries/{entryId}")]
+    public async Task<IActionResult> DeleteEntry(int habitId, int entryId)
     {
         try
         {
-            await _service.DeleteAsync(id);
-            return NoContent(); // 204 - Успешно удалено
+            await _service.DeleteEntryAsync(habitId, entryId);
+            return NoContent();
         }
-        catch (Exception ex) // Ловим KeyNotFoundException из сервиса
+        catch (KeyNotFoundException ex) // Если отметка не найдена
         {
             return NotFound(ex.Message);
+        }
+        catch (InvalidOperationException ex) // Если отметка чужая
+        {
+            return BadRequest(ex.Message);
         }
     }
     [HttpGet("today")]
@@ -72,5 +76,18 @@ public class HabitsController : ControllerBase
     {
         var stats = await _service.GetTodayStatsAsync();
         return Ok(stats);
+    }
+    [HttpGet("{id}/entries")]
+    public async Task<ActionResult<List<HabitEntryPublicDto>>> GetEntries(int id)
+    {
+        try
+        {
+            var result = await _service.GetEntriesByHabitIdAsync(id);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 }

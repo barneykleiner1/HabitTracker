@@ -24,6 +24,8 @@ public interface IHabitService
     Task<HabitEntryPublicDto> CreateEntryAsync(int habitId);
     Task DeleteAsync(int id);
     Task<DailyStatsDto> GetTodayStatsAsync();
+    Task DeleteEntryAsync(int habitId, int entryId);
+    Task<List<HabitEntryPublicDto>> GetEntriesByHabitIdAsync(int habitId);
 }
 public class HabitService : IHabitService 
 {
@@ -85,5 +87,26 @@ public class HabitService : IHabitService
             .Count();
         var habitDtos = habits.Select(h => new HabitPublicDto(h.Id, h.Name, h.CreatedAt)).ToList();
         return new DailyStatsDto(habits.Count, completedToday, habitDtos);
+    }
+    public async Task DeleteEntryAsync(int habitId, int entryId)
+    {
+        var entry = await _repository.GetEntryAsync(entryId);
+        if (entry == null) 
+        {
+            throw new InvalidOperationException($"Запись привычки с идентификатором {entryId} не найдена");
+        }
+        if (entry.HabitId != habitId) // <-- Сравниваем ID привычки из базы с ID привычки из URL (слава дипсику, у меня здесь был баг)
+        {
+            throw new InvalidOperationException($"Запись привычки с идентификатором {entryId} не принадлежит привычке с идентификатором {habitId}");
+        }
+        await _repository.DeleteEntryAsync(entry);
+    }
+    public async Task<List<HabitEntryPublicDto>> GetEntriesByHabitIdAsync(int habitId)
+    {
+        var habit = await _repository.GetByIdAsync(habitId);
+        if (habit == null) throw new KeyNotFoundException($"Привычка с id={habitId} не найдена");
+
+        var entries = await _repository.GetEntriesByHabitIdAsync(habitId);
+        return entries.Select(e => new HabitEntryPublicDto(e.Id, e.HabitId, e.Date, e.IsCompleted)).ToList();
     }
 }
