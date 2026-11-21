@@ -37,4 +37,21 @@ public class HabitsController : ControllerBase
             return Conflict(ex.Message);
         }
     }
+    [HttpPost("{id}/entries")]
+    public async Task<ActionResult<HabitEntryPublicDto>> CreateEntry(int id)
+    {
+        try
+        {
+            var result = await _service.CreateEntryAsync(id);
+            return Ok(result);
+        }
+        catch (HabitEntryAlreadyExistsException ex) // Сначала специфичное
+        {
+            return Conflict(ex.Message);
+        }
+        catch (Exception ex) // Потом всё остальное!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        {
+            return NotFound(ex.Message);
+        }
+    }
 }

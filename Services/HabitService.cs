@@ -48,5 +48,19 @@ public class HabitService : IHabitService
         await _repository.CreateAsync(habit);
         return new HabitPublicDto(habit.Id, habit.Name, habit.CreatedAt);
     }
-
+    public async Task<HabitEntryPublicDto> CreateEntryAsync(int habitId)
+    {
+        if (await _repository.GetByIdAsync(habitId) == null)
+        {
+            throw new Exception($"Привычка с идентификатором {habitId} не найдена");
+        }
+        var existingEntry = await _repository.GetEntryByDateAsync(habitId, DateTime.UtcNow);
+        if (existingEntry != null)
+        {
+            throw new HabitEntryAlreadyExistsException();
+        }
+        var HabitEntry = new HabitEntry { HabitId = habitId, Date = DateTime.UtcNow, IsCompleted = true };
+        await _repository.CreateEntryAsync(HabitEntry);
+        return new HabitEntryPublicDto(HabitEntry.Id, HabitEntry.HabitId, HabitEntry.Date, HabitEntry.IsCompleted);
+    }
 }
